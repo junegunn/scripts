@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Choi, Junegunn
+# 2009/11/19-
+
+for f in "$@"; do
+	echo bombing $f
+	ex "$f" -c 'set bomb' -c 'wq'
+done
+

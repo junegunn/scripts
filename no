@@ -1,0 +1,67 @@
+#!/usr/bin/perl -w
+# !*
+#
+# (template--20060828)
+# 20060828 by j_g
+
+use Getopt::Long;
+use File::Glob ":glob";
+use File::Copy;
+use Term::ANSIColor qw/:constants/;
+
+# global
+my (@OPT, $USAGE);
+sub helpEntries {
+	my $tlen = 25;
+	print STDERR "\n";
+	for $aref (@OPT) {
+		my ($opt, $desc, $input) = @$aref[0, 2, 3];
+		my $title = (split "\\|", $opt)[0];
+		$title =~ s/=.*//;
+		my $fmt = (length($title) > 1) ? "--%-${tlen}s" : "-%-${tlen}s ";
+		$title .= (length($title) > 1) ? "=$input" : " $input" if($input);
+		print STDERR ON_BLACK.BOLD.CYAN, "\t";
+		printf STDERR $fmt, $title;
+		print STDERR RESET.ON_BLACK."$desc\n".RESET;
+	}
+	print STDERR "\n";
+}
+
+sub usage {
+	print STDERR ON_BLACK.BOLD.WHITE. "usage: " .GREEN. "$0 " .RESET. "$USAGE\n";
+	exit 1 unless(shift);
+	helpEntries @OPT if(@OPT > 0);
+	exit 0;
+}
+
+sub optHelper {
+	$USAGE = shift;
+	@OPT = @_;
+	my %hash;
+	for $aref (@OPT) {
+		my ($opt, $ref) = @$aref[0, 1];
+		$$ref = 0;
+		$hash{$opt} = $ref;
+	}
+	my $help;
+	GetOptions %hash, ("help|h" => \$help);
+	usage 1 if($help);
+}
+my $dir;
+optHelper (
+	# usage
+	ON_BLACK.GREEN. "[--help] " .
+	BOLD.YELLOW. "..." .RESET,
+	# opts
+    ["d=s", \$dir, "base dir", "directory"],
+);
+unless($dir) { $dir = ""; }
+else { $dir .= "/"; }
+for (bsd_glob "$dir*") {
+	for $arg (@ARGV) {
+		goto skip if(/$arg/);
+	}
+	if(/\s/) { print "\"$_\" "; }
+	else     { print "$_ "; }
+	skip:
+}

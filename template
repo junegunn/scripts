@@ -1,0 +1,289 @@
+#!/bin/bash
+# template generator
+# 20060801 by j_g
+
+tag="`git config user.name` (`git config user.email`)
+# `date +20%y/%m/%d`-"
+
+tag_slash="`git config user.name` (`git config user.email`)
+// `date +20%y/%m/%d`-"
+
+c="\
+/*
+$tag
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+int main(int argc, char **argv) {
+
+}
+";
+
+h="#ifndef __FIXME_H__
+#define __FIXME_H__
+
+#endif // __FIXME_H__"
+
+cc="\
+/*
+$tag
+*/
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+
+}
+";
+
+gem="source 'https://rubygems.org'
+
+gem 'ansi256', '~> 0.1.0'
+"
+
+jruby='#!/usr/bin/env jruby
+# encoding: UTF-8
+# '$tag'
+
+require '\''rubygems'\''
+ENV['\''BUNDLE_GEMFILE'\''] = File.expand_path("../Gemfile", __FILE__)
+require '\''bundler/setup'\''
+
+';
+
+ruby='#!/usr/bin/env ruby
+# encoding: UTF-8
+# '$tag'
+
+require '\''rubygems'\''
+ENV['\''BUNDLE_GEMFILE'\''] = File.expand_path("../Gemfile", __FILE__)
+require '\''bundler/setup'\''
+
+';
+
+rspec='#!/usr/bin/env rspec --format documentation
+# encoding: UTF-8
+# '$tag'
+
+RSpec.configure do |c|
+  c.mock_framework = :mocha
+end
+
+describe "Something" do
+  it "should be tested" do
+
+  end
+end
+';
+
+scala="#!/usr/bin/env scala
+!#
+// $tag_slash
+
+";
+
+perl='#!/usr/bin/perl -w
+# '$tag'
+use Getopt::Long;
+use File::Glob ":glob";
+use File::Copy;
+use Term::ANSIColor qw/:constants/;
+	# CLEAR, RESET, BOLD, DARK, UNDERLINE, UNDERSCORE, BLINK, REVERSE, CONCEALED,
+	# BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE,
+	# ON_BLACK, ON_RED, ON_GREEN, ON_YELLOW, ON_BLUE, ON_MAGENTA, ON_CYAN, ON_WHITE
+
+';
+
+r="\
+#!/usr/bin/env Rscript
+# $tag
+
+"
+
+bash="\
+#!/bin/bash
+#
+# $tag
+
+";
+
+makeeach='# '$tag'
+# Make an executable out of each source file
+
+SRC     = $(wildcard *.cc)
+CFLAGS  = -O2 -Wall
+INCLUDE = /usr/local/include/boost
+
+#-------------------------------------------------
+
+EXEC    = $(basename $(SRC))
+CFLAGS += $(addprefix -I, $(INCLUDE))
+
+all: $(EXEC)
+
+%: %.cc
+	g++ $@.cc $(CFLAGS) -o $@
+
+clean:
+	-rm -vf $(EXEC) core
+
+.PHONY: clean all
+
+#------------------------------------------------
+';
+
+makeall='# '$tag'
+
+EXEC    = exec
+SRC     = $(wildcard *.cc)
+CFLAGS  = -O2 -Wall
+INCLUDE = /usr/local/include/boost
+
+#-------------------------------------------------
+# Compiler options -------------------------------
+
+CC      = g++
+CFLAGS += $(addprefix -I, $(INCLUDE)) -fPIC
+LFLAGS  = -lpthread
+OBJ = $(SRC:.cc=.o)
+
+# Build ------------------------------------------
+
+all: $(EXEC)
+
+%.o: %.cc
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(EXEC): $(OBJ)
+	$(CC) -o $(EXEC) $(OBJ) $(CFLAGS) $(LFLAGS)
+
+# Clean ------------------------------------------
+
+clean:
+	-rm -vf *.o $(EXEC) core
+
+.PHONY: clean all
+
+#-------------------------------------------------
+';
+
+junit='import org.junit.*;
+import static org.junit.Assert.*;
+
+/*
+java org.junit.runner.JUnitCore SampleTest
+
+java SimpleTest
+	public static void main(String args[]) {
+		org.junit.runner.JUnitCore.main("SimpleTest");
+	}
+*/
+
+
+public class SampleTest {
+
+	@Before
+	public void setUp() {
+
+	}
+
+	@After
+	public void tearDown() {
+
+	}
+
+	@Test
+	public void test1() {
+		assertTrue(true);
+	}
+
+	@Test(expected=IndexOutOfBoundsException.class)
+	public void test2() {
+
+	}
+}'
+
+tex='% Document class
+% classes:
+%          article, proc, minimal, report, book, slides
+% options:
+%          {10,11,...}pt, {a4,letter}paper, {no}titlepage,
+%          {one,two}column, {one,two}side, open{right,any}
+\documentclass[a4paper,11pt]{article}
+
+% Define the title
+\title{Untitled document}
+\author{Choi, Junegunn}
+
+% Packages
+\usepackage{hfont}
+
+% Spacing
+% \linespread{1.3}
+
+% Document begins
+\begin{document}
+
+% Generates the title
+\maketitle
+
+% Sections
+% \section{1}
+% \subsection{1-1}
+% \subsubsection{1-1-1}
+% \part{New part}
+
+% Bullets
+% \flushleft
+% \begin{enumerate}
+% \begin{itemize}
+% \item item 1
+% \item[-] item 2
+% \end{itemize}
+% \end{enumerate}
+
+
+\end{document}
+'
+
+sqlloader="-- $tag_oneline
+
+LOAD DATA
+	CHARACTERSET UTF8
+	INFILE '[INPUT FILE]'
+	INTO TABLE [TARGET TABLE]
+	-- TRUNCATE INTO TABLE [TARGET TABLE]
+	FIELDS TERMINATED BY \",\"
+	OPTIONALLY ENCLOSED BY '\"'
+	TRAILING NULLCOLS
+	([COLUMNS])
+
+-- sqlldr [ID]/[PASS]@[HOST]/SVCNAME CONTROL=loader.ctl LOG=import SKIP=1 DIRECT=TRUE
+"
+
+if [ $# -lt 1 ]; then
+	echo ":: template generator"
+	echo "** usage: $0 <c/cc/h/makeall/makeeach/ruby/jruby/gem/scala/perl/bash/junit/tex/sqlloader> [output]"
+	exit 1;
+fi
+
+eval SRC=\$${1};
+if [ ! "$SRC" ]; then
+	echo "** Invalid category"
+	exit 1
+fi
+
+if [ $# = 1 ]; then
+	echo "$SRC"
+else
+	echo "$SRC" > "$2"
+	[ $? = 0 ] && echo "OK, saved to $2"
+	[ `expr $1 : "perl\|bash\|ruby\|jruby\|scala"` -ne 0 ] && chmod +x $2
+fi
+

@@ -1,0 +1,10 @@
+#!/bin/bash
+# TODO: size, crop, framerate
+
+if [ $# -eq 2 ]; then
+  ffmpeg -i $1 -pix_fmt rgb24 temp.gif
+  convert -layers Optimize temp.gif $2
+  rm temp.gif
+else
+  echo "usage: gifify <mov> <gif>"
+fi

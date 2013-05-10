@@ -1,0 +1,18 @@
+#!/bin/bash
+# (cvs) extractor
+# 20070919 by j_g
+
+DIRBASE=$(basename "$PWD")
+TARGET_DIR=${1:-$DIRBASE}
+
+if [ $DIRBASE = "/" ]; then
+	echo "Cannot extract root!"
+	exit 1
+fi
+
+FILE=$TARGET_DIR/$DIRBASE.tgz
+cd ..
+touch "$FILE"
+# tar --exclude="$FILE" --exclude=CVS -cvzf "$FILE" "$DIRBASE"
+# tar --exclude="$FILE" --exclude=CVS --exclude=.svn --exclude=.git -cvzf "$FILE" "$DIRBASE"
+tar --exclude="$FILE" -cvzf "$FILE" "$DIRBASE"

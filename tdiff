@@ -1,0 +1,23 @@
+#!/usr/bin/perl -w
+# 20070508 by j_g
+use Getopt::Long;
+use File::Glob ":glob";
+use File::Copy;
+use Term::ANSIColor qw/:constants/;
+	# CLEAR, RESET, BOLD, DARK, UNDERLINE, UNDERSCORE, BLINK, REVERSE, CONCEALED,
+	# BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE,
+	# ON_BLACK, ON_RED, ON_GREEN, ON_YELLOW, ON_BLUE, ON_MAGENTA, ON_CYAN, ON_WHITE
+
+sub usage { die "usage: tdiff ##:##:## ##:##:##\n" }
+
+usage if (@ARGV != 2);
+
+my @t;
+for (@ARGV)
+{
+    my @a = split ":", $_;
+    usage if (@a < 3);
+    push @t, $a[0] * 3600 + $a[1] * 60 + $a[2];
+}
+
+print $t[0] - $t[1]. "\n";

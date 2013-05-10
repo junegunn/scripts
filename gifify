@@ -1,10 +1,15 @@
 #!/bin/bash
-# TODO: size, crop, framerate
-
-if [ $# -eq 2 ]; then
-  ffmpeg -i $1 -pix_fmt rgb24 temp.gif
-  convert -layers Optimize temp.gif $2
+if [ $# -ge 2 ]; then
+  #ffmpeg -i $1 -s 1366x768 -pix_fmt rgb24 temp.gif
+  #ffmpeg -i $1 -r 3 -s 683x384 -pix_fmt rgb24 temp.gif
+  I=$1
+  shift
+  O=$1
+  ffmpeg -i $I -pix_fmt rgb24 $@ temp.gif
+  convert -layers Optimize temp.gif $O
   rm temp.gif
 else
-  echo "usage: gifify <mov> <gif>"
+  echo "usage: gifify <mov> <gif> <options>"
+  echo "       e.g. -r 4 -s 1366x768"
+  echo "       e.g. -r 4 -filter:v "crop=1200:768:0:0" -s 600x384"
 fi

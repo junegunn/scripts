@@ -9,7 +9,7 @@ if [ $# -ge 2 ]; then
   convert -layers Optimize temp.gif $O
   rm temp.gif
 else
-  echo "usage: gifify <mov> <gif> <options>"
-  echo "       e.g. -r 4 -s 1366x768"
-  echo "       e.g. -r 4 -filter:v "crop=1200:768:0:0" -s 600x384"
+  echo 'usage: gifify <mov> <gif> <options>'
+  echo '       e.g. -r 4 -s 1366x768'
+  echo '       e.g. -r 4 -filter:v "crop=1200:768:0:0" -s 600x384'
 fi

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+TAIL="echo -n Press enter to finish."
+FIRST=$1
+shift
+
+while [ $# -gt 0 ]; do
+  CMD=$1
+  tmux splitw "$CMD; $TAIL; read"
+  tmux select-layout tiled > /dev/null
+  shift
+done
+
+tmux set-window-option synchronize-panes on > /dev/null
+$FIRST
+$TAIL
+read
